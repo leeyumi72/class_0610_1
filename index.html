@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이유미 — Visual Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Noto+Serif+KR:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #F5F0E8;
+      --text:     #2C2C2C;
+      --green:    #3D5A47;
+      --warm:     #B5714A;
+      --card:     #EDE6D6;
+      --line:     #C8BEA8;
+      --muted:    #7A7060;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 300;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    /* ── Typography helpers ───────────────────────── */
+    .serif-en {
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .serif-en-italic {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+    }
+
+    /* ── Navigation ───────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.4rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.4s, backdrop-filter 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(245, 240, 232, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--green); }
+
+    /* ── Hero ─────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 20% 30%, rgba(61, 90, 71, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 80% 70%, rgba(181, 113, 74, 0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 90% 80% at 50% 50%, rgba(200, 190, 168, 0.2) 0%, transparent 70%),
+        var(--bg);
+      will-change: transform;
+    }
+
+    /* Organic floating shapes */
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      top: 10%; left: 5%;
+      width: 280px; height: 340px;
+      background: rgba(61, 90, 71, 0.07);
+      border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+      animation: float1 12s ease-in-out infinite;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      bottom: 12%; right: 8%;
+      width: 220px; height: 260px;
+      background: rgba(181, 113, 74, 0.08);
+      border-radius: 40% 60% 45% 55% / 60% 40% 60% 40%;
+      animation: float2 15s ease-in-out infinite;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33%       { transform: translate(12px, -18px) rotate(3deg); }
+      66%       { transform: translate(-8px, 10px) rotate(-2deg); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      40%       { transform: translate(-14px, 12px) rotate(-4deg); }
+      70%       { transform: translate(10px, -8px) rotate(2deg); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--warm);
+      letter-spacing: 0.2em;
+      margin-bottom: 1.6rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.4s forwards;
+    }
+
+    .hero-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      font-weight: 300;
+      color: var(--green);
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+      opacity: 0;
+      animation: fadeUp 1s 0.7s forwards;
+    }
+
+    .hero-divider {
+      width: 1px;
+      height: 0;
+      background: var(--line);
+      margin: 1.8rem auto;
+      animation: growLine 1s 1.2s forwards;
+    }
+
+    .hero-sub {
+      font-size: 0.82rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeUp 1s 1.5s forwards;
+    }
+
+    .hero-typing {
+      margin-top: 2.4rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      color: var(--text);
+      min-height: 2.4rem;
+      opacity: 0;
+      animation: fadeUp 1s 2s forwards;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background: var(--warm);
+      margin-left: 3px;
+      vertical-align: middle;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: fadeIn 1s 2.8s forwards;
+    }
+    .scroll-hint span {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .scroll-arrow {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--line), transparent);
+      animation: scrollDown 2s 3s ease-in-out infinite;
+    }
+
+    @keyframes scrollDown {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ── Section base ─────────────────────────────── */
+    section {
+      padding: 8rem 4rem;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      letter-spacing: 0.22em;
+      color: var(--warm);
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      color: var(--green);
+      line-height: 1.25;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-line {
+      width: 48px;
+      height: 1px;
+      background: var(--warm);
+      margin-bottom: 2.5rem;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── About Section ────────────────────────────── */
+    #about {
+      border-top: 1px solid var(--line);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 2;
+      margin-bottom: 1.2rem;
+    }
+
+    .about-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.5rem;
+      color: var(--green);
+      line-height: 1.6;
+      border-left: 2px solid var(--warm);
+      padding-left: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .keyword-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .k-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1.8rem 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.4rem;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+      cursor: default;
+    }
+    .k-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 36px rgba(61, 90, 71, 0.1);
+      border-color: var(--green);
+    }
+
+    .k-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+
+    .k-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--green);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.3rem;
+    }
+
+    .k-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── Philosophy Section ───────────────────────── */
+    #philosophy {
+      background: var(--green);
+      max-width: 100%;
+      padding: 8rem 4rem;
+    }
+    #philosophy-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    #philosophy .section-label { color: rgba(255,255,255,0.5); }
+    #philosophy .section-title { color: #fff; }
+    #philosophy .section-line  { background: rgba(255,255,255,0.3); }
+
+    .philo-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: #fff;
+      line-height: 1.5;
+      max-width: 820px;
+      margin-bottom: 4rem;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 3rem;
+    }
+
+    .tl-item {
+      transition: transform 0.35s ease;
+    }
+    .tl-item:hover { transform: translateY(-4px); }
+
+    .tl-year {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+
+    .tl-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .tl-desc {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.8;
+    }
+
+    /* ── Work Section ─────────────────────────────── */
+    #work {
+      border-top: 1px solid var(--line);
+    }
+
+    .work-intro {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 2;
+      max-width: 540px;
+      margin-bottom: 4rem;
+    }
+
+    .work-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .w-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 2.4rem 2rem;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+    .w-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--warm);
+      transition: width 0.4s ease;
+    }
+    .w-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(44,44,44,0.08); }
+    .w-card:hover::after { width: 100%; }
+
+    .w-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--line);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .w-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--green);
+      margin-bottom: 0.8rem;
+    }
+
+    .w-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    /* ── Story Section ────────────────────────────── */
+    #story {
+      border-top: 1px solid var(--line);
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .story-text p {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 2.1;
+      margin-bottom: 1.4rem;
+    }
+
+    .story-blockquote {
+      background: var(--card);
+      border-left: 3px solid var(--warm);
+      padding: 1.8rem 2rem;
+      border-radius: 0 4px 4px 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--green);
+      line-height: 1.7;
+      margin-top: 2rem;
+    }
+    .story-blockquote cite {
+      display: block;
+      margin-top: 0.8rem;
+      font-family: 'Noto Serif KR', serif;
+      font-style: normal;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .book-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .book-item {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      transition: transform 0.3s, border-color 0.3s;
+      cursor: default;
+    }
+    .book-item:hover {
+      transform: translateX(6px);
+      border-color: var(--green);
+    }
+
+    .book-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .book-info {}
+    .book-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--green);
+      margin-bottom: 0.15rem;
+    }
+    .book-author {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Contact Section ──────────────────────────── */
+    #contact {
+      max-width: 100%;
+      background: var(--card);
+      padding: 7rem 4rem;
+      border-top: 1px solid var(--line);
+    }
+    #contact-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    #contact .section-title { color: var(--green); }
+
+    .contact-text {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 2;
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.88rem;
+      letter-spacing: 0.06em;
+      transition: color 0.3s, transform 0.3s;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid transparent;
+    }
+    .contact-link:hover {
+      color: var(--green);
+      border-bottom-color: var(--line);
+      transform: translateX(4px);
+    }
+    .contact-link-icon { font-size: 1.1rem; }
+
+    .closing-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--green);
+      line-height: 1.55;
+    }
+    .closing-sig {
+      display: block;
+      margin-top: 1.5rem;
+      font-family: 'Noto Serif KR', serif;
+      font-style: normal;
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    /* ── Footer ───────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      color: var(--line);
+      background: var(--bg);
+    }
+
+    /* ── Keyframes ────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes growLine {
+      from { height: 0; }
+      to   { height: 48px; }
+    }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 2rem; }
+      .nav-links { gap: 1.5rem; }
+      section { padding: 5rem 2rem; }
+      #philosophy { padding: 5rem 2rem; }
+      #contact { padding: 5rem 2rem; }
+
+      .about-grid,
+      .story-grid,
+      #contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+
+      .work-cards { grid-template-columns: 1fr; }
+      .timeline   { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.4rem; }
+      .nav-links { display: none; }
+      .hero-name  { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo serif-en">Lee Yumi</a>
+    <ul class="nav-links">
+      <li><a href="#about">소개</a></li>
+      <li><a href="#philosophy">철학</a></li>
+      <li><a href="#work">작업</a></li>
+      <li><a href="#story">이야기</a></li>
+      <li><a href="#contact">연락</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero" style="padding:0; max-width:100%; margin:0;">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Visual Designer &amp; Studio Director</p>
+      <h1 class="hero-name">이유미</h1>
+      <div class="hero-divider"></div>
+      <p class="hero-sub">30 Years of Visual Language</p>
+      <p class="hero-typing serif-en-italic">
+        <span id="typedText"></span><span class="cursor"></span>
+      </p>
+    </div>
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="reveal">
+      <span class="section-label">01 — About</span>
+      <h2 class="section-title">디자인은 나의<br/>언어입니다</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>30년이라는 시간 동안, 저는 선과 여백, 색과 형태로 말을 걸어왔습니다. 시각디자이너로서의 삶은 단순히 보이는 것을 만드는 일이 아니라, 보이지 않는 것을 눈에 담아내는 여정이었습니다.</p>
+        <p>INFJ인 저는 깊은 내면에서 우러나오는 직관으로 디자인합니다. 화려함보다 본질을, 소음보다 고요함을 선택합니다. 그리고 그 고요함 속에서 진짜 아름다움을 찾습니다.</p>
+        <blockquote class="about-quote">
+          "자연을 걷다 보면<br/>가장 좋은 디자인을 만납니다."
+        </blockquote>
+      </div>
+      <div class="keyword-cards reveal" style="transition-delay: 0.15s;">
+        <div class="k-card">
+          <div class="k-icon">🌿</div>
+          <div>
+            <div class="k-label">자연</div>
+            <div class="k-desc">홀로 걷는 숲길에서 영감을 얻습니다. 자연의 패턴과 리듬은 제 디자인의 원천입니다.</div>
+          </div>
+        </div>
+        <div class="k-card" style="transition-delay: 0.05s;">
+          <div class="k-icon">📖</div>
+          <div>
+            <div class="k-label">독서</div>
+            <div class="k-desc">책은 제 두 번째 언어입니다. 타인의 생각을 읽는 것이 더 넓은 시각을 만들어줍니다.</div>
+          </div>
+        </div>
+        <div class="k-card" style="transition-delay: 0.1s;">
+          <div class="k-icon">✦</div>
+          <div>
+            <div class="k-label">디자인</div>
+            <div class="k-desc">30년의 경험이 쌓인 지금도, 디자인은 여전히 설레는 발견의 연속입니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy -->
+  <div id="philosophy">
+    <div id="philosophy-inner">
+      <div class="reveal">
+        <span class="section-label">02 — Philosophy</span>
+        <h2 class="section-title">30년이 가르쳐<br/>준 것들</h2>
+        <div class="section-line"></div>
+      </div>
+      <p class="philo-quote reveal">
+        "Good design is not what you add,<br/>
+        <em>it is what you leave out.</em>"
+      </p>
+      <div class="timeline reveal">
+        <div class="tl-item">
+          <div class="tl-year">1995</div>
+          <div class="tl-title">시작</div>
+          <div class="tl-desc">시각디자인과 함께 시작된 여정. 처음 마주한 흰 종이 위의 무한한 가능성.</div>
+        </div>
+        <div class="tl-item" style="transition-delay:0.12s;">
+          <div class="tl-year">2005</div>
+          <div class="tl-title">성장</div>
+          <div class="tl-desc">10년의 경험이 쌓이며 나만의 언어가 생겼습니다. 단순함이 얼마나 강력한지를 배웠습니다.</div>
+        </div>
+        <div class="tl-item" style="transition-delay:0.24s;">
+          <div class="tl-year">Now</div>
+          <div class="tl-title">오늘</div>
+          <div class="tl-desc">스튜디오를 이끌며 다음 세대 디자이너들과 함께 새로운 시각 언어를 만들어가고 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Work -->
+  <section id="work">
+    <div class="reveal">
+      <span class="section-label">03 — Work</span>
+      <h2 class="section-title">우리가 하는 일</h2>
+      <div class="section-line"></div>
+    </div>
+    <p class="work-intro reveal">
+      디자인 스튜디오로서 브랜드의 본질을 시각 언어로 번역합니다. 표면이 아닌 철학을 디자인합니다.
+    </p>
+    <div class="work-cards">
+      <div class="w-card reveal" style="transition-delay:0.05s;">
+        <div class="w-num serif-en">01</div>
+        <div class="w-title">Brand Identity</div>
+        <div class="w-desc">브랜드의 본질을 탐구하고 고유한 시각 정체성을 구축합니다. 로고부터 전체 브랜드 시스템까지.</div>
+      </div>
+      <div class="w-card reveal" style="transition-delay:0.15s;">
+        <div class="w-num serif-en">02</div>
+        <div class="w-title">Space Design</div>
+        <div class="w-desc">공간이 말을 걸도록 디자인합니다. 환경 그래픽, 사이니지, 공간 아이덴티티 시스템.</div>
+      </div>
+      <div class="w-card reveal" style="transition-delay:0.25s;">
+        <div class="w-num serif-en">03</div>
+        <div class="w-title">Editorial Design</div>
+        <div class="w-desc">책, 카탈로그, 매거진. 타이포그래피와 여백으로 이야기를 담아내는 에디토리얼 디자인.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section id="story">
+    <div class="reveal">
+      <span class="section-label">04 — Story</span>
+      <h2 class="section-title">일상에서 얻는<br/>영감</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="story-grid">
+      <div class="story-text reveal">
+        <p>이른 아침, 아무도 없는 산길을 걷습니다. 발밑의 낙엽 소리, 빛이 나뭇잎 사이로 떨어지는 방식, 이끼가 돌을 덮는 패턴. 자연은 언제나 가장 완벽한 디자인 교과서입니다.</p>
+        <p>걷다 지치면 앉아서 읽습니다. 한 권의 책이 열어주는 다른 세계. 저는 그 여백에서 디자인을 봅니다. 작가가 말하지 않은 것들이 가장 강렬하게 남습니다.</p>
+        <blockquote class="story-blockquote">
+          "The most important tool of the typographer is his eyes."
+          <cite>— Jan Tschichold</cite>
+        </blockquote>
+      </div>
+      <div class="book-list reveal" style="transition-delay:0.15s;">
+        <p class="section-label" style="margin-bottom:1.5rem;">즐겨 읽는 책들</p>
+        <div class="book-item">
+          <div class="book-icon">📚</div>
+          <div class="book-info">
+            <div class="book-title">The Elements of Typographic Style</div>
+            <div class="book-author">Robert Bringhurst</div>
+          </div>
+        </div>
+        <div class="book-item">
+          <div class="book-icon">📚</div>
+          <div class="book-info">
+            <div class="book-title">Less and More — Dieter Rams</div>
+            <div class="book-author">Klaus Klemp &amp; Keiko Ueki-Polet</div>
+          </div>
+        </div>
+        <div class="book-item">
+          <div class="book-icon">📚</div>
+          <div class="book-info">
+            <div class="book-title">사물의 언어</div>
+            <div class="book-author">데얀 수직</div>
+          </div>
+        </div>
+        <div class="book-item">
+          <div class="book-icon">📚</div>
+          <div class="book-info">
+            <div class="book-title">걷기의 철학</div>
+            <div class="book-author">프레데릭 그로</div>
+          </div>
+        </div>
+        <div class="book-item">
+          <div class="book-icon">📚</div>
+          <div class="book-info">
+            <div class="book-title">빨강의 역사</div>
+            <div class="book-author">미셸 파스투로</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <div id="contact">
+    <div id="contact-inner">
+      <div>
+        <div class="reveal">
+          <span class="section-label">05 — Contact</span>
+          <h2 class="section-title">함께 만들어가요</h2>
+          <div class="section-line"></div>
+        </div>
+        <p class="contact-text reveal">
+          새로운 프로젝트, 협업, 혹은 그냥 디자인 이야기가 나누고 싶으시다면 언제든지 연락주세요.
+        </p>
+        <div class="contact-links reveal">
+          <a href="mailto:studio@leeyumi.kr" class="contact-link">
+            <span class="contact-link-icon">✉</span>
+            studio@leeyumi.kr
+          </a>
+          <a href="#" class="contact-link">
+            <span class="contact-link-icon">◈</span>
+            Instagram @leeyumi_design
+          </a>
+          <a href="#" class="contact-link">
+            <span class="contact-link-icon">◇</span>
+            Behance / leeyumi
+          </a>
+          <a href="#" class="contact-link">
+            <span class="contact-link-icon">○</span>
+            Seoul, Korea
+          </a>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:0.15s;">
+        <p class="closing-quote serif-en-italic">
+          "Design is the silent ambassador<br/>of your brand."
+          <span class="closing-sig">— 이유미 · Visual Designer · 30 Years</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Lee Yumi Studio. All rights reserved.
+  </footer>
+
+  <script>
+    /* ── Navbar scroll effect ───────────────────── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* ── Hero parallax ──────────────────────────── */
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (y < window.innerHeight) {
+        heroBg.style.transform = `translateY(${y * 0.35}px)`;
+      }
+    }, { passive: true });
+
+    /* ── Typing animation ───────────────────────── */
+    const phrases = [
+      '자연처럼, 디자인처럼.',
+      'Simplicity is the ultimate sophistication.',
+      '여백이 말한다.',
+      'Design is a way of life.',
+      '30년의 시각 언어.',
+    ];
+    let pIdx = 0, cIdx = 0, deleting = false;
+    const el = document.getElementById('typedText');
+
+    function type() {
+      const phrase = phrases[pIdx];
+      if (!deleting) {
+        cIdx++;
+        el.textContent = phrase.slice(0, cIdx);
+        if (cIdx === phrase.length) {
+          deleting = true;
+          setTimeout(type, 2200);
+          return;
+        }
+        setTimeout(type, 80);
+      } else {
+        cIdx--;
+        el.textContent = phrase.slice(0, cIdx);
+        if (cIdx === 0) {
+          deleting = false;
+          pIdx = (pIdx + 1) % phrases.length;
+          setTimeout(type, 500);
+          return;
+        }
+        setTimeout(type, 40);
+      }
+    }
+    setTimeout(type, 2500);
+
+    /* ── Scroll reveal ──────────────────────────── */
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
